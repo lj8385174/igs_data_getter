@@ -49,7 +49,8 @@ dataType = 'OBS'
 
 #Echo the help Text
 def help():
-    print helpText
+    type_ = sys.getfilesystemencoding()
+    print helpText.decode( 'utf-8' ).encode( type_ )
 
 #Parse the Options
 def parseOptions():
