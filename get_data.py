@@ -119,8 +119,9 @@ def readStation(stationListPath):
     stationLine = f.readline()
     while stationLine:
         stationList.append( stationLine.strip('\n') )
+        stattionLine = f.readline()
     f.close()
-    return len( stationList ) > 1, stationList
+    return len( stationList ) > 0, stationList
 
 ### use the module wget to get file
 def processWget(argDict):
