@@ -22,6 +22,7 @@ import getopt
 import url_list
 import timeconvert
 import wget
+import re
 
 #The help text
 helpText='get_data.py,为后续PPP计算准备相关数据\n'+\
@@ -33,7 +34,7 @@ helpText='get_data.py,为后续PPP计算准备相关数据\n'+\
          '  -i,  --interval of time span      时间间隔(单位:小时,必须为整数,默认为24)\n'+\
          '  -a,  --agency of GNSS product     发布GNSS产品的机构(IGS,IGR,IGU,COD,ESA,JPL,etc)\n'+\
          "  -s,  --station's name or list file 测站名或者测站列表文件\n"+\
-         "  -t,  --type of product            下载的产品类型(OBS,EPH,CLK,ERP,etc,IGS_OBS is also OK,needn't -a)\n"+\
+         "  -t,  --type of product            下载的产品类型(OBS,EPH,CLK,ERP,etc)\n"+\
          '  -p,  --the data save path         下载数据保存路径(默认为当前路径)\n'+\
          '  -l,  --the preffix of list file   保存下载数据文件名的文件前缀\n'+\
          '  -d,  --decompress                 选择是否解压,如果带有-d选项,则解压文件:若未带有-d选项,则不解压\n'+\
@@ -119,7 +120,7 @@ def readStation(stationListPath):
     stationLine = f.readline()
     while stationLine:
         stationList.append( stationLine.strip('\n') )
-        stattionLine = f.readline()
+        stationLine = f.readline()
     f.close()
     return len( stationList ) > 0, stationList
 
@@ -128,28 +129,53 @@ def processWget(argDict):
     url = argDict['url']
     savePath = argDict['-p']
     print '[url=%s, savePath=%s]'%(url, savePath)
-    file_name = wget.download(url, savePath)
-    if argDict.has_key('-l'):
-        dir_, file_ = os.path.split(file_name )
-        new_file_name = '%s/%s%s'%(dir_, argDict['-l'], file_)
-        os.renames(file_name, new_file_name)
-        argDict['file_name'] = new_file_name
-    else:
+    #### check dir exists, if not create
+    if os.path.exists( savePath ) == False:
+        os.mkdir( savePath )
+    if os.path.exists( savePath ):
+        file_name = wget.filename_from_url(url)
+        file_full_path = '%s/%s'%(savePath, file_name)
+        if os.path.exists( file_full_path ):
+            print 'file %s exists!'%(file_full_path)
+            argDict['file_name'] = file_full_path
+            return False
+        if file_name.find('.Z') != -1 or file_name.find('gz') != -1:
+            file_full_path = '%s/%s'%(savePath, file_name.replace('.Z', ''))
+            if file_full_path.find('.gz') != -1:
+                file_full_path = '%s/%s'%(savePath, file_name.replace('.gz',''))
+            if os.path.exists( file_full_path ):
+                print 'file %s exists!'%(file_full_path)
+                argDict['file_name'] = file_full_path
+                return False
+        file_name = wget.download(url, savePath)
         argDict['file_name'] = file_name
+        return True
+    else:
+        print 'can not create save path'
+        return False
 
 def processTime(argDict):
     if argDict['status'] == 0:
+        if argDict['-t'].lower().find('erp') != -1:
+            argDict['-bn'] = timeconvert.ADD_HOUR( argDict['-b'], -7*24)
+            argDict['-en'] = timeconvert.ADD_HOUR( argDict['-e'],  7*24)
+        elif argDict['-t'].lower().find('clk') != -1:
+            argDict['-bn'] = timeconvert.ADD_HOUR( argDict['-b'], -24)
+            argDict['-en'] = timeconvert.ADD_HOUR( argDict['-e'],  24)
+        else:
+            argDict['-bn'] = argDict['-b']
+            argDict['-en'] = argDict['-e']
         argDict['status'] = 1
-        argDict['timestamp'] = argDict['-b'] ### this place you can forward or backward interval
+        argDict['timestamp'] = argDict['-bn'] ### this place you can forward or backward interval
         argDict['%s'] = argDict['station_name'].lower()
         argDict['%S'] = argDict['station_name'].upper()
         argDict['%r'] = argDict['station_name']
     else:
-        if timeconvert.COMP_CT( argDict['timestamp'], argDict['-e'] ): ### this place you can forward or backward interval
+        if timeconvert.COMP_CT( argDict['timestamp'], argDict['-en'] ): ### this place you can forward or backward interval
             return False
         else:
             argDict['timestamp'] = timeconvert.ADD_HOUR( argDict['timestamp'], argDict['-i'] )
-            if timeconvert.SUB_TIME( argDict['timestamp'], argDict['-e'] ) >= int( argDict['-i'] ) * 3600 :
+            if timeconvert.SUB_TIME( argDict['timestamp'], argDict['-en'] ) >= int( argDict['-i'] ) * 3600 :
                 return False
 
     #### calculate the all support time format value
@@ -190,7 +216,21 @@ def processDecompressEnd(argDict):
             path = argDict['file_name'].replace('.Z',  '')
         else:
             path = argDict['file_name'].replace('.gz', '')
-        argDict['file_name'] = path 
+        argDict['file_name'] = path
+        dir_, file_ = os.path.split( path )
+        #### regular expression match
+        if re.match('[a-zA-Z]*\d*\.\d{2}d', file_):
+            processObsDecode(argDict)
+
+#### decode Obs D files
+def processObsDecode(argDict):
+    crxCmd = 'crx2rnx %s'%( argDict['file_name'] )
+    os.system(crxCmd)
+    dir_, file_ = os.path.split( argDict['file_name'] )
+    name_, ext_ = file_.split('.')
+    ext_ = ext_.replace( 'd', 'o' )
+    argDict[ 'file_name' ] = '%s/%s.%s'%(dir_, name_, ext_)
+
 
 ### Decompress the download, in like unix, gzip -d, in window you must 
 ### set gzip.exe in the same work dir
@@ -204,10 +244,12 @@ def processDecompress(argDict):
 def process(argDict):
     if processTime(argDict):
         if processUrl(argDict):
-            processWget(argDict)
-            if argDict.has_key('-d'):
-                processDecompress( argDict )
-                return True
+            if processWget(argDict):
+                if argDict.has_key('-d'):
+                    processDecompress( argDict )
+                    return True
+                else:
+                    return True
             else:
                 return True
         else:
@@ -216,6 +258,8 @@ def process(argDict):
         return False
 
 def processMakeListBegin(argDict):
+    if os.path.exists(argDict['-p']) == False:
+        os.mkdir(argDict['-p'])
     path = argDict['-p']
     dataType = argDict['-t'].lower()
     if argDict.has_key('-l'):
@@ -236,25 +280,29 @@ def processMakeListEnd(argDict):
 
 ### main procedure
 def main():
-    parseStatus, argDict = parseOptions() ## Parse the Options
-    if parseStatus :
-        readStatus, stationList = readStation( argDict['-s'] ) ## Read Station Files
-        if readStatus :
-            if argDict['-a'] in agencyList :
-                processMakeListBegin(argDict)
-                for stationName in stationList:
-                    argDict['status']  = 0 
-                    argDict['station_name'] = stationName
-                    while process(argDict):
-                        processMakeList(argDict)
-                        print '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) )
-                processMakeListEnd(argDict)
+    try:
+        parseStatus, argDict = parseOptions() ## Parse the Options
+        if parseStatus :
+            readStatus, stationList = readStation( argDict['-s'] ) ## Read Station Files
+            if readStatus :
+                if argDict['-a'] in agencyList :
+                    processMakeListBegin(argDict)
+                    for stationName in stationList:
+                        argDict['status']  = 0 
+                        argDict['station_name'] = stationName
+                        while process(argDict):
+                            processMakeList(argDict)
+                            print '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) )
+                    processMakeListEnd(argDict)
+                else:
+                    print 'Not include this agency!'
             else:
-                print 'Not include this agency!'
+                print 'read station failure!'
         else:
-            print 'read station failure!'
-    else:
-        print 'parse options failure!'
+            print 'parse options failure!'
+    except:
+        print 'some error catch!'
+
 
 if __name__ == '__main__':
     main()
