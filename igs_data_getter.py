@@ -284,7 +284,7 @@ def processMakeListEnd(argDict):
 
 ### main procedure
 def main():
-    #try:
+    try:
         parseStatus, argDict = parseOptions() ## Parse the Options
         if parseStatus :
             readStatus, stationList = readStation( argDict['-s'] ) ## Read Station Files
@@ -299,7 +299,7 @@ def main():
                                 processMakeList(argDict)
                                 print '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) )
                             else:
-                                print ''
+                                continue
                     processMakeListEnd(argDict)
                 else:
                     print 'Not include this agency!'
@@ -307,8 +307,8 @@ def main():
                 print 'read station failure!'
         else:
             print 'parse options failure!'
-    #except:
-        #print 'some error catch!'
+    except:
+        print 'some error catch!'
 
 
 if __name__ == '__main__':
