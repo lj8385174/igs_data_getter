@@ -25,8 +25,8 @@ import wget
 import re
 import socket
 
-### set socket timeout globally 60 second
-socket.setdefaulttimeout(60)
+### set socket timeout globally 600 second
+socket.setdefaulttimeout(600)
 
 #The help text
 helpText='igs_data_getter.py,为后续PPP计算准备相关数据\n'+\
