@@ -12,6 +12,6 @@ setup(
         author_email='whurinex@163.com',
         url='https://github.com/binex/igs_data_getter.git',
         license='LGPL',
-        scripts=['get_data.py', 'timeconvert.py', 'wget.py', 'url_list.py'],
+        scripts=['igs_data_getter.py', 'timeconvert.py', 'wget.py', 'url_list.py'],
         )
 
