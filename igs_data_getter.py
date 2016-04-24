@@ -23,10 +23,14 @@ import url_list
 import timeconvert
 import wget
 import re
+import socket
+
+### set socket timeout globally 60 second
+socket.setdefaulttimeout(60)
 
 #The help text
-helpText='get_data.py,为后续PPP计算准备相关数据\n'+\
-         '用法:python  get_data.py [起始时间][终止时间][时间间隔][机构][URL路径][测站][保存路径]...[选项]\n'+\
+helpText='igs_data_getter.py,为后续PPP计算准备相关数据\n'+\
+         '用法:python  igs_data_getter.py [起始时间][终止时间][时间间隔][机构][URL路径][测站][保存路径]...[选项]\n'+\
          '参数说明：\n'+\
          '  -h,  --help                       获取帮助信息\n'+\
          '  -b,  --bigining of time span      需要的产品的起始时间,格式为民用时(%04Y%02M%02D%02h%02m%02s)\n'+\
@@ -39,8 +43,8 @@ helpText='get_data.py,为后续PPP计算准备相关数据\n'+\
          '  -l,  --the preffix of list file   保存下载数据文件名的文件前缀\n'+\
          '  -d,  --decompress                 选择是否解压,如果带有-d选项,则解压文件:若未带有-d选项,则不解压\n'+\
          '  -m,  --merge rinex files          选择是否将同一测站的观测数据进行合并\n'+\
-         '示例: python  get_data.py -b 20140301000000 -e 20140303000000 -i 24 -a IGS -s staion.list -p ./data\n'+\
-         '      python  get_data.py -b 20140301000000 -e 20140303000000 -a IGS -s staion.list  -p ./data -l igs1781\n'
+         '示例: python  igs_data_getter.py -b 20140301000000 -e 20140303000000 -i 24 -a IGS -s staion.list -p ./data\n'+\
+         '      python  igs_data_getter.py -b 20140301000000 -e 20140303000000 -a IGS -s staion.list  -p ./data -l igs1781\n'
 
 #All support options
 argList = 'hdmb:e:i:a:s:u:p:l:t:'

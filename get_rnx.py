@@ -93,7 +93,7 @@ def parseOptions():
 
 
 def dataDownLoad(argDict):
-    pyCmd = 'python get_data.py '
+    pyCmd = 'igs_data_getter.py '
     for op, value in argDict.items():
         pyCmd = pyCmd + op + ' ' + value + ' '
     os.system(pyCmd)

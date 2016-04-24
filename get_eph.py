@@ -90,7 +90,7 @@ def dataDownLoad(argDict, dataTypes):
     for dataType in dataTypes:
         argDict['-t'] = dataType # Change the data Type
         argDict['-i'] = '24' # Set Default interval
-        pyCmd = 'python get_data.py '
+        pyCmd = 'igs_data_getter.py '
         for op, value in argDict.items():
             pyCmd = pyCmd + op + ' ' + value + ' '
         os.system(pyCmd)
