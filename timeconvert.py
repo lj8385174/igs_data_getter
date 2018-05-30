@@ -60,7 +60,7 @@ def CT2JD(ct):
             sys.exit(1)
         else:
             for key in timeKey:
-                if ct.has_key(key) == False:
+                if (key in ct) == False:
                     print( 'common time dictionary must have key ',key)
                     sys.exit(1)
             time = ct

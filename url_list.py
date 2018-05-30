@@ -189,7 +189,7 @@ urlDict['VMF_GRID']                = ['http://ggosatm.hg.tuwien.ac.at/DELAY/GRID
 
 
 def getUrlByName(name, formatted):
-    if urlDict.has_key(name):
+    if (name in urlDict):
         url = urlDict[name][0]
         formatOrder = []
         if formatted == True:

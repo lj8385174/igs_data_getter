@@ -84,7 +84,7 @@ def parseOptions():
 
     # Check necessary Options
     for opt in argNecessary:
-        if argDict.has_key(opt) == False:
+        if (opt in argDict) == False:
             print( 'lack of essential option ' + opt + '\n')
             help()
             return False, None

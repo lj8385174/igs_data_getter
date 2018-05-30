@@ -64,8 +64,8 @@ agencyList = ['BKG', 'COD', 'EMR', 'ESA', 'GFZ', 'GRG', 'GSI', 'IAC',\
 #Echo the help Text
 def help():
     type_ = sys.getfilesystemencoding()
-    print( helpText.decode('utf-8').encode(type_))
-
+    # print( helpText.decode('utf-8').encode(type_))
+    print( helpText)
 #Parse the Options
 def parseOptions():
     
@@ -98,7 +98,7 @@ def parseOptions():
 
     # Check necessary Options
     for opt in argNecessary:
-        if argDict.has_key(opt) == False:
+        if (opt in argDict) == False:
             print( 'lack of essential option ' + opt + '\n')
             help()
             return False, None
@@ -110,7 +110,7 @@ def parseOptions():
         return False, None
 
     ## Set default Value of interval
-    if argDict.has_key('-i') == False:
+    if ('-i' in argDict ) == False:
         argDict['-i'] = 24
 
     return True, argDict
@@ -249,7 +249,7 @@ def process(argDict):
     if processTime(argDict):
         if processUrl(argDict):
             if processWget(argDict):
-                if argDict.has_key('-d'):
+                if ('-d' in argDict):
                     processDecompress( argDict )
                     return True
                 else:
@@ -266,7 +266,7 @@ def processMakeListBegin(argDict):
         os.mkdir(argDict['-p'])
     path = argDict['-p']
     dataType = argDict['-t'].lower()
-    if argDict.has_key('-l'):
+    if ('-l' in argDict):
         list_path = '%s/%s.%slist'%(path, argDict['-l'], dataType)
     else:
         list_path = '%s/%s.%slist'%(path, dataType, dataType)
@@ -284,31 +284,35 @@ def processMakeListEnd(argDict):
 
 ### main procedure
 def main():
-    try:
-        parseStatus, argDict = parseOptions() ## Parse the Options
-        if parseStatus :
-            readStatus, stationList = readStation( argDict['-s'] ) ## Read Station Files
-            if readStatus :
-                if argDict['-a'] in agencyList :
-                    processMakeListBegin(argDict)
-                    for stationName in stationList:
-                        argDict['status']  = 0 
-                        argDict['station_name'] = stationName
-                        while process(argDict):
-                            if argDict['isrecord']:
-                                processMakeList(argDict)
-                                print( '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) ))
-                            else:
-                                continue
-                    processMakeListEnd(argDict)
-                else:
-                    print( 'Not include this agency!')
+    # try:
+    parseStatus, argDict = parseOptions() ## Parse the Options
+    if parseStatus :
+        readStatus, stationList = readStation( argDict['-s'] ) ## Read Station Files
+        if readStatus :
+            if argDict['-a'] in agencyList :
+                processMakeListBegin(argDict)
+                for stationName in stationList:
+                    argDict['status']  = 0 
+                    argDict['station_name'] = stationName
+                    while process(argDict):
+                        if argDict['isrecord']:
+                            processMakeList(argDict)
+                            print( '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) ))
+                        else:
+                            continue
+                processMakeListEnd(argDict)
             else:
-                print( 'read station failure!')
+                print( 'Not include this agency!')
         else:
-            print( 'parse options failure!')
-    except:
-        print( 'some error catch!')
+            print( 'read station failure!')
+    else:
+        print( 'parse options failure!')
+    # except Exception as e:
+    #     print( 'some error catch!')
+    #     # print ("Unexpected error:", sys.exc_info())
+    #     exc_type, exc_obj, exc_tb = sys.exc_info()
+    #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+    #     print(exc_type, fname, exc_tb.tb_lineno)
 
 
 if __name__ == '__main__':
