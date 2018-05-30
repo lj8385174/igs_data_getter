@@ -199,7 +199,7 @@ def getUrlByName(name, formatted):
                     if tag in url_key_word:
                         formatOrder.append(tag)
                     else:
-                        print 'warning: the tag [\'%s\'] is not in url_key_word'%(tag)
+                        print( 'warning: the tag [\'%s\'] is not in url_key_word'%(tag))
             for key, value in formatDict.items():
                 url = url.replace(key, value)
         return url, formatOrder

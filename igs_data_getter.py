@@ -64,7 +64,7 @@ agencyList = ['BKG', 'COD', 'EMR', 'ESA', 'GFZ', 'GRG', 'GSI', 'IAC',\
 #Echo the help Text
 def help():
     type_ = sys.getfilesystemencoding()
-    print helpText.decode('utf-8').encode(type_)
+    print( helpText.decode('utf-8').encode(type_))
 
 #Parse the Options
 def parseOptions():
@@ -73,7 +73,7 @@ def parseOptions():
    
    # Validate the option number
     if len( sys.argv ) < 1 :
-        print 'The options number at least two\n'
+        print( 'The options number at least two\n')
         help()
         return False, None
    
@@ -92,20 +92,20 @@ def parseOptions():
                 return False, None
             elif '-i' == op :
                 if int(value, 10) < 0 :
-                    print 'the interval must > 0\n'
+                    print( 'the interval must > 0\n')
                     help()
                     return False, None
 
     # Check necessary Options
     for opt in argNecessary:
         if argDict.has_key(opt) == False:
-            print 'lack of essential option ' + opt + '\n'
+            print( 'lack of essential option ' + opt + '\n')
             help()
             return False, None
 
     ## Check begin and end Time logically
     if timeconvert.COMP_CT( argDict['-e'], argDict['-b'] ) == False:
-        print 'The begin Time must less than end Time'
+        print( 'The begin Time must less than end Time')
         help()
         return False, None
 
@@ -150,12 +150,12 @@ def processWget(argDict):
                 argDict['file_name'] = file_full_path
                 return False
         argDict['isrecord'] = True
-        print '[url=%s, savePath=%s]'%(url, savePath)
+        print( '[url=%s, savePath=%s]'%(url, savePath))
         file_name = wget.download(url, savePath)
         argDict['file_name'] = file_name
         return True
     else:
-        print 'can not create save path'
+        print( 'can not create save path')
         return False
 
 def processTime(argDict):
@@ -297,18 +297,18 @@ def main():
                         while process(argDict):
                             if argDict['isrecord']:
                                 processMakeList(argDict)
-                                print '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) )
+                                print( '\n[timestamp=%s]'%( timeconvert.TEXT_TIME( argDict['timestamp'] ) ))
                             else:
                                 continue
                     processMakeListEnd(argDict)
                 else:
-                    print 'Not include this agency!'
+                    print( 'Not include this agency!')
             else:
-                print 'read station failure!'
+                print( 'read station failure!')
         else:
-            print 'parse options failure!'
+            print( 'parse options failure!')
     except:
-        print 'some error catch!'
+        print( 'some error catch!')
 
 
 if __name__ == '__main__':

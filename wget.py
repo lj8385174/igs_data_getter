@@ -448,7 +448,7 @@ def callback_progress(blocks, block_size, total_size, bar_function):
 
     draws adaptive progress bar in terminal/console
 
-    use sys.stdout.write() instead of "print,", because it allows one more
+    use sys.stdout.write() instead of "print(,", because it allows one more)
     symbol at the line end without linefeed on Windows
 
     :param blocks: number of blocks transferred so far
@@ -533,7 +533,7 @@ def download(url, out=None, bar=bar_adaptive):
         filename = filename_fix_existing(filename)
     shutil.move(tmpfile, filename)
 
-    #print headers
+    #print( headers)
     return filename
 
 
@@ -567,8 +567,8 @@ if __name__ == "__main__":
     url = sys.argv[1]
     filename = download(args[0], out=options.output)
 
-    print("")
-    print("Saved under %s" % filename)
+    print((""))
+    print(("Saved under %s" % filename))
 
 r"""
 features that require more tuits for urlretrieve API
@@ -595,7 +595,7 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
  [x] -h, --help, --version (CHAOS speccy)
 [ ] clpbar progress bar style
 _ 30.0Mb at  3.0 Mbps  eta:   0:00:20   30% [=====         ]
-[ ] test "bar \r" print with \r at the end of line on Windows
+[ ] test "bar \r" print( with \r at the end of line on Windows)
 [ ] process Python 2.x urllib.ContentTooShortError exception gracefully
     (ideally retry and continue download)
 

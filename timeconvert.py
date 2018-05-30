@@ -44,28 +44,28 @@ def CT2JD(ct):
     time = {}
     if isinstance(ct, str):
         if len( ct ) < 14:
-            print 'common time string must formatted[%04dY%02dM%02dD%02dh%02dm%4.2fs]!'
+            print( 'common time string must formatted[%04dY%02dM%02dD%02dh%02dm%4.2fs]!')
             sys.exit(1)
         else:
             time = tStringToDict(ct)
     elif isinstance(ct, list):
         if len( ct ) < 6:
-            print 'common time List must have six elements!'
+            print( 'common time List must have six elements!')
             sys.exit(1)
         else:
             time = tListToDict(ct)
     elif isinstance(ct, dict):
         if len( ct ) < 6 :
-            print 'common time dictionay must have six elements!'
+            print( 'common time dictionay must have six elements!')
             sys.exit(1)
         else:
             for key in timeKey:
                 if ct.has_key(key) == False:
-                    print 'common time dictionary must have key ',key
+                    print( 'common time dictionary must have key ',key)
                     sys.exit(1)
             time = ct
     else:
-        print 'common time not support this instance!'
+        print( 'common time not support this instance!')
         sys.exit(1)
 
     if int(time['month']) <= 2:
@@ -142,7 +142,7 @@ def CT2WOY(ct):
 def GPST2CT(gpst, tag):
     if isinstance(gpst, list):
         if len( gpst ) < 2:
-            print 'GPST Must have two elements!'
+            print( 'GPST Must have two elements!')
             sys.exit(1)
         else:
             jd = []
@@ -156,7 +156,7 @@ def GPST2CT(gpst, tag):
             jd.append(jd2)
             return JD2CT(jd, tag)
     else:
-        print 'GPST not support instance!'
+        print( 'GPST not support instance!')
         sys.exit(1)
 
 def JD2DOY(jd):

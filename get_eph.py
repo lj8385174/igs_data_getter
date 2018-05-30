@@ -44,7 +44,7 @@ argNecessary = ['-b', '-e', '-a', '-t', '-p']
 #Echo the help Text
 def help():
     type_ = sys.getfilesystemencoding()
-    print helpText.decode( 'utf-8' ).encode( type_ )
+    print( helpText.decode( 'utf-8' ).encode( type_ ))
 
 #Parse the Options
 def parseOptions():
@@ -53,7 +53,7 @@ def parseOptions():
    
    # Validate the option number
     if len( sys.argv ) < 1 :
-        print 'The options number at least two\n'
+        print( 'The options number at least two\n')
         help()
         return False, None
    
@@ -72,14 +72,14 @@ def parseOptions():
                 return False, None
             elif '-i' == op :
                 if int(value, 10) <= 0 :
-                    print 'the interval must > 0\n'
+                    print( 'the interval must > 0\n')
                     help()
                     return False, None
 
     # Check necessary Options
     for opt in argNecessary:
-        if argDict.has_key(opt) == False:
-            print 'lack of essential option ' + opt + '\n'
+        if opt in argDict == False:
+            print( 'lack of essential option ' + opt + '\n')
             help()
             return False, None
     
@@ -113,7 +113,7 @@ def main():
         if True == readStatus:
             dataDownLoad(argDict, dataTypes)
         else:
-            print "type.list error\n"
+            print( "type.list error\n")
 
 if __name__ == '__main__':
     main()
