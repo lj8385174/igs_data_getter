@@ -63,7 +63,7 @@ agencyList = ['BKG', 'COD', 'EMR', 'ESA', 'GFZ', 'GRG', 'GSI', 'IAC',\
 
 #Echo the help Text
 def help():
-    type_ = sys.getfilesystemencoding()
+    # type_ = sys.getfilesystemencoding()
     # print( helpText.decode('utf-8').encode(type_))
     print( helpText)
 #Parse the Options
@@ -116,6 +116,10 @@ def parseOptions():
     return True, argDict
 
 def readStation(stationListPath):
+    '''
+    read station data from station file.
+    Format:
+    '''
     stationList = []
     if ( '.' in stationListPath ) == False :
         stationList.append( stationListPath )
